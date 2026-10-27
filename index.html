@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard de Férias | Bosi Terraplenagem</title>
+
+<style>
+:root {
+  --bg: #07111f;
+  --bg2: #111c32;
+  --panel: rgba(20, 37, 63, 0.88);
+  --panel-light: rgba(31, 54, 88, 0.76);
+  --border: rgba(255,255,255,.12);
+  --text: #eef6ff;
+  --muted: #9eb0c8;
+  --cyan: #4de1ff;
+  --blue: #728cff;
+  --green: #42dda0;
+  --yellow: #ffd166;
+  --orange: #ff9f43;
+  --red: #ff6b81;
+  --purple: #bd8cff;
+  --shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at 8% 3%, rgba(77,225,255,.18), transparent 28rem),
+    radial-gradient(circle at 92% 8%, rgba(114,140,255,.20), transparent 30rem),
+    linear-gradient(135deg, #06101d 0%, #0b1930 48%, #17152f 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .18;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 42px 42px;
+}
+
+.container {
+  width: min(1500px, 94%);
+  margin: auto;
+  position: relative;
+}
+
+header {
+  padding: 35px 0 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.eyebrow {
+  color: var(--cyan);
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 8px 0 5px;
+  font-size: clamp(26px, 4vw, 43px);
+  line-height: 1.05;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.date-box {
+  min-width: 190px;
+  padding: 15px 18px;
+  text-align: right;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(255,255,255,.06);
+  box-shadow: var(--shadow);
+}
+
+.date-box strong {
+  display: block;
+  color: var(--cyan);
+  font-size: 18px;
+}
+
+.date-box span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(25,45,76,.86), rgba(10,23,42,.88));
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(15px);
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.kpi {
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.kpi::after {
+  content: "";
+  position: absolute;
+  right: -35px;
+  bottom: -40px;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: .10;
+}
+
+.kpi-title {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+
+.kpi-value {
+  margin: 9px 0 3px;
+  color: var(--accent);
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.kpi-description {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.card {
+  padding: 21px;
+}
+
+.card h2 {
+  margin: 0 0 18px;
+  font-size: 16px;
+}
+
+.card h2 small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.bar-row {
+  margin: 15px 0;
+}
+
+.bar-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+  font-size: 13px;
+}
+
+.bar-header span:last-child {
+  color: var(--muted);
+}
+
+.bar-background {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 30px;
+  background: rgba(255,255,255,.09);
+}
+
+.bar {
+  height: 100%;
+  min-width: 2px;
+  border-radius: 30px;
+  background: linear-gradient(90deg, var(--bar-start), var(--bar-end));
+}
+
+.alert {
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.alert:last-child {
+  border-bottom: 0;
+}
+
+.alert-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--alert-color);
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.alert-description {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.filters {
+  padding: 17px;
+  margin-bottom: 18px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+input,
+select,
+button {
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  background: rgba(3, 13, 26, .78);
+  padding: 0 12px;
+  outline: none;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--cyan);
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+  font-weight: bold;
+  background: linear-gradient(135deg, #237d99, #566de0);
+}
+
+button.secondary {
+  background: rgba(255,255,255,.09);
+}
+
+.table-panel {
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 21px 15px;
+}
+
+.table-header h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.table-header small {
+  color: var(--muted);
+}
+
+.table-wrapper {
+  max-height: 680px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 1250px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 13px 12px;
+  color: #c4d5ec;
+  background: #142943;
+  font-size: 10px;
+  letter-spacing: .5px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+tbody td {
+  padding: 12px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  vertical-align: top;
+}
+
+tbody tr:hover {
+  background: rgba(77,225,255,.06);
+}
+
+.employee-name {
+  color: white;
+  font-weight: bold;
+}
+
+.employee-info {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: normal;
+}
+
+.status {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.status-a-vencer {
+  color: var(--green);
+  background: rgba(66,221,160,.14);
+}
+
+.status-vencido {
+  color: var(--orange);
+  background: rgba(255,159,67,.15);
+}
+
+.status-parcial {
+  color: var(--purple);
+  background: rgba(189,140,255,.15);
+}
+
+.status-quitado {
+  color: var(--cyan);
+  background: rgba(77,225,255,.13);
+}
+
+.status-perdido {
+  color: var(--red);
+  background: rgba(255,107,129,.15);
+}
+
+.warning {
+  color: var(--yellow);
+  font-weight: bold;
+}
+
+.empty {
+  padding: 40px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 16px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.legend i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 5px;
+  border-radius: 50%;
+}
+
+footer {
+  padding: 8px 0 30px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+@media (max-width: 1150px) {
+  .kpis {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filter-grid {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  header {
+    display: block;
+  }
+
+  .date-box {
+    display: inline-block;
+    margin-top: 15px;
+    text-align: left;
+  }
+
+  .kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-value {
+    font-size: 23px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+  <div>
+    <div class="eyebrow">Departamento Pessoal · Gestão Estratégica</div>
+    <h1>Dashboard de Férias</h1>
+    <div class="subtitle">
+      BOSI TERRAPLENAGEM LTDA · análise de saldos, vencimentos e utilização
+    </div>
+  </div>
+
+  <div class="date-box">
+    <strong>27/10/2026</strong>
+    <span>data-base do relatório</span>
+  </div>
+</header>
+
+<section class="kpis">
+  <div class="panel kpi" style="--accent: var(--cyan)">
+    <div class="kpi-title">Colaboradores</div>
+    <div class="kpi-value" id="kpiEmployees">0</div>
+    <div class="kpi-description">pessoas no relatório</div>
+  </div>
+
+  <div class="panel kpi" style="--accent: var(--yellow)">
+    <div class="kpi-title">Saldo total</div>
+    <div class="kpi-value" id="kpiBalance">0</div>
+    <div class="kpi-description">dias registrados</div>
+  </div>
+
+  <div class="panel kpi" style="--accent: var(--orange)">
+    <div class="kpi-title">Períodos vencidos</div>
+    <div class="kpi-value" id="kpiOverdue">0</div>
+    <div class="kpi-description">registros vencidos</div>
+  </div>
+
+  <div class="panel kpi" style="--accent: var(--purple)">
+    <div class="kpi-title">Saldo vencido</div>
+    <div class="kpi-value" id="kpiOverdueBalance">0</div>
+    <div class="kpi-description">dias em períodos vencidos</div>
+  </div>
+
+  <div class="panel kpi" style="--accent: var(--red)">
+    <div class="kpi-title">Faltas registradas</div>
+    <div class="kpi-value" id="kpiAbsences">0</div>
+    <div class="kpi-description">faltas informadas</div>
+  </div>
+</section>
+
+<section class="dashboard-grid">
+  <div class="panel card">
+    <h2>Situação dos períodos <small>quantidade de registros</small></h2>
+    <div id="statusChart"></div>
+
+    <div class="legend">
+      <span><i style="background:var(--green)"></i>A vencer</span>
+      <span><i style="background:var(--orange)"></i>Vencido</span>
+      <span><i style="background:var(--purple)"></i>Parcial</span>
+      <span><i style="background:var(--cyan)"></i>Quitado</span>
+      <span><i style="background:var(--red)"></i>Perdido</span>
+    </div>
+  </div>
+
+  <div class="panel card">
+    <h2>Saldo por situação <small>dias</small></h2>
+    <div id="balanceChart"></div>
+  </div>
+
+  <div class="panel card">
+    <h2>Alertas para decisão</h2>
+    <div id="alerts"></div>
+  </div>
+</section>
+
+<section class="panel filters">
+  <div class="filter-grid">
+    <div>
+      <label for="search">Buscar colaborador, matrícula ou período</label>
+      <input
+        id="search"
+        type="search"
+        placeholder="Digite para pesquisar..."
+      >
+    </div>
+
+    <div>
+      <label for="statusFilter">Situação</label>
+      <select id="statusFilter">
+        <option value="">Todas</option>
+        <option value="A vencer">A vencer</option>
+        <option value="Vencido">Vencido</option>
+        <option value="Parcial">Parcial</option>
+        <option value="Quitado">Quitado</option>
+        <option value="Perdido">Perdido</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="employeeFilter">Colaborador</label>
+      <select id="employeeFilter">
+        <option value="">Todos</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="sortFilter">Ordenar por</label>
+      <select id="sortFilter">
+        <option value="employee">Colaborador</option>
+        <option value="balanceDesc">Maior saldo</option>
+        <option value="balanceAsc">Menor saldo</option>
+        <option value="status">Situação</option>
+        <option value="limit">Limite de concessão</option>
+      </select>
+    </div>
+
+    <button id="clearButton" class="secondary">Limpar filtros</button>
+  </div>
+</section>
+
+<section class="panel table-panel">
+  <div class="table-header">
+    <div>
+      <h2>Detalhamento dos períodos aquisitivos</h2>
+      <small id="resultCount">0 registros</small>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Colaborador</th>
+          <th>Período aquisitivo</th>
+          <th>Período de gozo</th>
+          <th>Limite concessão</th>
+          <th>Situação</th>
+          <th>Tipo</th>
+          <th>Dias gozados</th>
+          <th>Saldo</th>
+          <th>Dias afast.</th>
+          <th>Faltas</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  Fonte: Relatório de Férias com saldo em 27/10/2026.<br>
+  Os asteriscos foram mantidos conforme as observações do documento original:
+  possível ou efetiva perda de período aquisitivo em função de afastamento.
+</footer>
+
+</div>
+
+<script>
+const rawData = `
+00152|ADELIO MENDES DA SILVEIRA|03/08/2026|03/08/2026 a 02/08/2027|-|02/08/2028|A vencer|-|-|7,5|0|2
+00017|ALESSANDRA GONCALVES BORBA|29/09/2022|29/09/2026 a 28/09/2027|-|28/09/2028|A vencer|-|-|2,5|50|0
+00017|ALESSANDRA GONCALVES BORBA|29/09/2022|29/09/2025 a 28/09/2026|-|28/09/2027|Vencido|-|-|30|70|0
+00017|ALESSANDRA GONCALVES BORBA|29/09/2022|29/09/2024 a 28/09/2025|-|28/09/2026|Vencido|-|-|30|0|1
+00017|ALESSANDRA GONCALVES BORBA|29/09/2022|29/09/2023 a 28/09/2024|22/12/2025 a 06/01/2026|28/09/2025|Quitado|N|16|0|0|0
+00017|ALESSANDRA GONCALVES BORBA|29/09/2022|29/09/2023 a 28/09/2024|16/12/2024 a 29/12/2024|28/09/2025|Parcial|N|14|16|0|0
+00017|ALESSANDRA GONCALVES BORBA|29/09/2022|29/09/2022 a 28/09/2023|-|28/09/2024|Perdido|N|-|0 **|197|0
+00001|CAMILA MARTINS FIGUEIREDO|19/08/2024|19/08/2026 a 18/08/2027|-|18/08/2028|A vencer|-|-|5|0|0
+00001|CAMILA MARTINS FIGUEIREDO|19/08/2024|19/08/2025 a 18/08/2026|-|18/08/2027|Vencido|-|-|30|0|0
+00001|CAMILA MARTINS FIGUEIREDO|19/08/2024|19/08/2024 a 18/08/2025|22/12/2025 a 04/01/2026|18/08/2026|Parcial|N|14|16|0|0
+00133|CHARLES IGOR DOS SANTOS TAVARES|24/11/2025|24/11/2025 a 23/11/2026|-|23/11/2027|A vencer|-|-|27,5|0|4
+00002|DANIEL GONCALVES DIAS|02/05/2022|02/05/2026 a 01/05/2027|-|01/05/2028|A vencer|-|-|15|0|0
+00002|DANIEL GONCALVES DIAS|02/05/2022|02/05/2025 a 01/05/2026|-|01/05/2027|Vencido|-|-|24|0|6
+00002|DANIEL GONCALVES DIAS|02/05/2022|02/05/2024 a 01/05/2025|20/07/2026 a 29/07/2026|01/05/2026|Parcial|N|10|20|0|0
+00002|DANIEL GONCALVES DIAS|02/05/2022|02/05/2023 a 01/05/2024|05/11/2025 a 04/12/2025|01/05/2025|Quitado|N|30|0|0|0
+00002|DANIEL GONCALVES DIAS|02/05/2022|02/05/2022 a 01/05/2023|10/06/2025 a 09/07/2025|01/05/2024|Quitado|N|30|0|0|0
+00130|EMERSON PEDRA LOPES|17/09/2025|17/09/2026 a 16/09/2027|-|16/09/2028|A vencer|-|-|2,5|0|0
+00130|EMERSON PEDRA LOPES|17/09/2025|17/09/2025 a 16/09/2026|-|16/09/2027|Vencido|-|-|30|0|5
+00003|FABIANO DE CAMPOS TEIXEIRA|02/05/2022|02/05/2026 a 01/05/2027|-|01/05/2028|A vencer|-|-|15|0|0
+00003|FABIANO DE CAMPOS TEIXEIRA|02/05/2022|02/05/2025 a 01/05/2026|-|01/05/2027|Vencido|-|-|30|0|0
+00003|FABIANO DE CAMPOS TEIXEIRA|02/05/2022|02/05/2024 a 01/05/2025|22/12/2025 a 04/01/2026|01/05/2026|Parcial|N|14|16|0|0
+00003|FABIANO DE CAMPOS TEIXEIRA|02/05/2022|02/05/2023 a 01/05/2024|05/11/2025 a 04/12/2025|01/05/2025|Quitado|N|30|0|0|0
+00003|FABIANO DE CAMPOS TEIXEIRA|02/05/2022|02/05/2022 a 01/05/2023|22/05/2023 a 20/06/2023|01/05/2024|Quitado|N|30|0|0|0
+00150|FELIPE FERNANDES DE MOURA|04/08/2026|04/08/2026 a 03/08/2027|-|03/08/2028|A vencer|-|-|7,5|0|1
+00155|GERALDO MEDEIROS JUNIOR|24/08/2026|24/08/2026 a 23/08/2027|-|23/08/2028|A vencer|-|-|5|0|0
+00095|JADIR RODRIGUES GOMES|03/02/2025|03/02/2026 a 02/02/2027|-|02/02/2028|A vencer|-|-|9|0|32
+00095|JADIR RODRIGUES GOMES|03/02/2025|03/02/2025 a 02/02/2026|22/12/2025 a 04/01/2026|02/02/2027|Parcial|N|14|4|0|22
+00036|JORDANA DE ALMEIDA SILVA|02/06/2023|02/06/2026 a 01/06/2027|-|01/06/2028|A vencer|-|-|12,5|0|0
+00036|JORDANA DE ALMEIDA SILVA|02/06/2023|02/06/2025 a 01/06/2026|-|01/06/2027|Vencido|-|-|30|0|0
+00036|JORDANA DE ALMEIDA SILVA|02/06/2023|02/06/2024 a 01/06/2025|22/12/2025 a 28/12/2025|01/06/2026|Parcial|N|7|23|0|0
+00036|JORDANA DE ALMEIDA SILVA|02/06/2023|02/06/2023 a 01/06/2024|08/07/2024 a 27/07/2024; 28/07/2024 a 06/08/2024|01/06/2025|Quitado|N|30|0|0|0
+00007|JOSE GERALDO DE REZENDE|02/05/2022|02/05/2026 a 01/05/2027|-|01/05/2028|A vencer|-|-|0 *|365|0
+00007|JOSE GERALDO DE REZENDE|02/05/2022|02/05/2025 a 01/05/2026|-|01/05/2027|Vencido|-|-|0 *|360|0
+00007|JOSE GERALDO DE REZENDE|02/05/2022|02/05/2024 a 01/05/2025|-|01/05/2026|Vencido|-|-|0 *|364|0
+00007|JOSE GERALDO DE REZENDE|02/05/2022|02/05/2023 a 01/05/2024|-|01/05/2025|Vencido|-|-|0 *|249|0
+00007|JOSE GERALDO DE REZENDE|02/05/2022|02/05/2022 a 01/05/2023|17/05/2023 a 15/06/2023|01/05/2024|Quitado|N|30|0|0|0
+00108|LEONARDO ALVES DE SOUSA|14/04/2025|14/04/2026 a 13/04/2027|-|13/04/2028|A vencer|-|-|14|0|11
+00108|LEONARDO ALVES DE SOUSA|14/04/2025|14/04/2025 a 13/04/2026|22/12/2025 a 04/01/2026|13/04/2027|Parcial|N|14|16|0|4
+00141|LUCIO JUNIO ARCANJO FONSECA|09/02/2026|09/02/2026 a 08/02/2027|-|08/02/2028|A vencer|-|-|22,5|0|0
+00006|LUIZ FERNANDO DA COSTA|02/05/2022|02/05/2026 a 01/05/2027|-|01/05/2028|A vencer|-|-|15|0|0
+00006|LUIZ FERNANDO DA COSTA|02/05/2022|02/05/2025 a 01/05/2026|-|01/05/2027|Vencido|-|-|30|0|0
+00006|LUIZ FERNANDO DA COSTA|02/05/2022|02/05/2024 a 01/05/2025|14/09/2026 a 06/10/2026|01/05/2026|Quitado|N|23|0|0|0
+00006|LUIZ FERNANDO DA COSTA|02/05/2022|02/05/2024 a 01/05/2025|29/12/2025 a 04/01/2026|01/05/2026|Parcial|N|7|23|0|0
+00006|LUIZ FERNANDO DA COSTA|02/05/2022|02/05/2023 a 01/05/2024|22/12/2025 a 26/12/2025|01/05/2025|Quitado|N|5|0|0|0
+00006|LUIZ FERNANDO DA COSTA|02/05/2022|02/05/2023 a 01/05/2024|26/12/2024 a 05/01/2025|01/05/2025|Parcial|N|11|5|0|0
+00006|LUIZ FERNANDO DA COSTA|02/05/2022|02/05/2023 a 01/05/2024|03/01/2024 a 16/01/2024|01/05/2025|Parcial|N|14|16|0|0
+00006|LUIZ FERNANDO DA COSTA|02/05/2022|02/05/2022 a 01/05/2023|18/12/2023 a 02/01/2024|01/05/2024|Quitado|N|16|0|0|0
+00006|LUIZ FERNANDO DA COSTA|02/05/2022|02/05/2022 a 01/05/2023|26/12/2022 a 08/01/2023|01/05/2024|Parcial|N|14|16|0|0
+00043|MARCELO VICTOR FRANCISCO GOULART DE PAUL|16/11/2023|16/11/2025 a 15/11/2026|-|15/11/2027|A vencer|-|-|30|0|0
+00043|MARCELO VICTOR FRANCISCO GOULART DE PAUL|16/11/2023|16/11/2024 a 15/11/2025|29/12/2025 a 04/01/2026|15/11/2026|Parcial|N|7|23|0|0
+00043|MARCELO VICTOR FRANCISCO GOULART DE PAUL|16/11/2023|16/11/2023 a 15/11/2024|22/12/2025 a 28/12/2025|15/11/2025|Quitado|N|7|0|0|0
+00043|MARCELO VICTOR FRANCISCO GOULART DE PAUL|16/11/2023|16/11/2023 a 15/11/2024|05/06/2025 a 12/06/2025|15/11/2025|Parcial|N|8|7|0|0
+00043|MARCELO VICTOR FRANCISCO GOULART DE PAUL|16/11/2023|16/11/2023 a 15/11/2024|15/01/2025 a 26/01/2025|15/11/2025|Parcial|N|12|15|0|0
+00043|MARCELO VICTOR FRANCISCO GOULART DE PAUL|16/11/2023|16/11/2023 a 15/11/2024|30/12/2024 a 01/01/2025|15/11/2025|Parcial|N|3|27|0|0
+00131|MARCOS EDUARDO PAULISTA MOURA|09/10/2025|09/10/2026 a 08/10/2027|-|08/10/2028|A vencer|-|-|2,5|0|0
+00131|MARCOS EDUARDO PAULISTA MOURA|09/10/2025|09/10/2025 a 08/10/2026|-|08/10/2027|Vencido|-|-|30|0|0
+00146|REINALDO DOS SANTOS LANA|23/06/2026|23/06/2026 a 22/06/2027|-|22/06/2028|A vencer|-|-|10|0|0
+00156|ROBERTA MONIQUE ALVES RODRIGUES|01/09/2026|01/09/2026 a 31/08/2027|-|31/08/2028|A vencer|-|-|5|0|2
+00005|TIAGO ALVES COSTA|02/05/2022|26/12/2025 a 25/12/2026|-|25/12/2027|A vencer|-|-|25|0|0
+00005|TIAGO ALVES COSTA|02/05/2022|26/12/2024 a 25/12/2025|-|25/12/2026|Vencido|-|-|30|0|0
+00005|TIAGO ALVES COSTA|02/05/2022|26/12/2023 a 25/12/2024|14/10/2025 a 29/10/2025|25/12/2025|Quitado|N|16|0|0|0
+00005|TIAGO ALVES COSTA|02/05/2022|26/12/2023 a 25/12/2024|16/12/2024 a 29/12/2024|25/12/2025|Parcial|N|14|16|0|0
+00005|TIAGO ALVES COSTA|02/05/2022|26/12/2022 a 25/12/2023|02/10/2024 a 18/10/2024|25/12/2024|Quitado|N|17|0|0|0
+00005|TIAGO ALVES COSTA|02/05/2022|26/12/2022 a 25/12/2023|26/12/2023 a 07/01/2024|25/12/2024|Parcial|N|13|17|0|0
+00005|TIAGO ALVES COSTA|02/05/2022|02/05/2022 a 25/12/2022|26/12/2022 a 08/01/2023|25/12/2023|Parcial|N|14|0|0|0
+00138|VALDINEI DE OLIVEIRA|20/01/2026|20/01/2026 a 19/01/2027|-|19/01/2028|A vencer|-|-|22,5|0|0
+00148|WELESON CLAUDIO EVANGELISTA RIBEIRO|27/07/2026|27/07/2026 a 26/07/2027|-|26/07/2028|A vencer|-|-|7,5|0|1
+`;
+
+const data = rawData
+  .trim()
+  .split("\n")
+  .map(line => line.split("|"))
+  .map(row => ({
+    matricula: row[0],
+    nome: row[1],
+    admissao: row[2],
+    aquisitivo: row[3],
+    gozo: row[4],
+    limite: row[5],
+    situacao: row[6],
+    tipo: row[7],
+    gozados: row[8],
+    saldo: row[9],
+    afastamento: row[10],
+    faltas: row[11]
+  }));
+
+const statusList = ["A vencer", "Vencido", "Parcial", "Quitado", "Perdido"];
+
+const statusColors = {
+  "A vencer": ["var(--green)", "var(--cyan)"],
+  "Vencido": ["var(--orange)", "var(--yellow)"],
+  "Parcial": ["var(--purple)", "var(--blue)"],
+  "Quitado": ["var(--cyan)", "var(--blue)"],
+  "Perdido": ["var(--red)", "var(--orange)"]
+};
+
+function toNumber(value) {
+  const number = parseFloat(
+    String(value)
+      .replace("*", "")
+      .replace(",", ".")
+      .trim()
+  );
+
+  return Number.isFinite(number) ? number : 0;
+}
+
+function formatNumber(value) {
+  return Number(value).toLocaleString("pt-BR", {
+    maximumFractionDigits: 1
+  });
+}
+
+function statusClass(status) {
+  const classes = {
+    "A vencer": "status-a-vencer",
+    "Vencido": "status-vencido",
+    "Parcial": "status-parcial",
+    "Quitado": "status-quitado",
+    "Perdido": "status-perdido"
+  };
+
+  return classes[status] || "";
+}
+
+function populateEmployees() {
+  const select = document.getElementById("employeeFilter");
+
+  const names = [...new Set(data.map(item => item.nome))]
+    .sort((a, b) => a.localeCompare(b));
+
+  names.forEach(name => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    select.appendChild(option);
+  });
+}
+
+function getFilteredData() {
+  const search = document
+    .getElementById("search")
+    .value
+    .toLowerCase()
+    .trim();
+
+  const status = document.getElementById("statusFilter").value;
+  const employee = document.getElementById("employeeFilter").value;
+  const sort = document.getElementById("sortFilter").value;
+
+  let filtered = data.filter(item => {
+    const searchableText = Object.values(item)
+      .join(" ")
+      .toLowerCase();
+
+    return (
+      (!search || searchableText.includes(search)) &&
+      (!status || item.situacao === status) &&
+      (!employee || item.nome === employee)
+    );
+  });
+
+  filtered.sort((a, b) => {
+    if (sort === "balanceDesc") {
+      return toNumber(b.saldo) - toNumber(a.saldo);
+    }
+
+    if (sort === "balanceAsc") {
+      return toNumber(a.saldo) - toNumber(b.saldo);
+    }
+
+    if (sort === "status") {
+      return a.situacao.localeCompare(b.situacao);
+    }
+
+    if (sort === "limit") {
+      return a.limite.split("/").reverse().join("")
+        .localeCompare(b.limite.split("/").reverse().join(""));
+    }
+
+    return a.nome.localeCompare(b.nome);
+  });
+
+  return filtered;
+}
+
+function renderKpis(filtered) {
+  const employees = new Set(filtered.map(item => item.nome)).size;
+
+  const totalBalance = filtered.reduce(
+    (total, item) => total + toNumber(item.saldo),
+    0
+  );
+
+  const overdue = filtered.filter(
+    item => item.situacao === "Vencido"
+  );
+
+  const overdueBalance = overdue.reduce(
+    (total, item) => total + toNumber(item.saldo),
+    0
+  );
+
+  const absences = filtered.reduce(
+    (total, item) => total + toNumber(item.faltas),
+    0
+  );
+
+  document.getElementById("kpiEmployees").textContent = employees;
+  document.getElementById("kpiBalance").textContent =
+    formatNumber(totalBalance) + " dias";
+  document.getElementById("kpiOverdue").textContent = overdue.length;
+  document.getElementById("kpiOverdueBalance").textContent =
+    formatNumber(overdueBalance) + " dias";
+  document.getElementById("kpiAbsences").textContent =
+    formatNumber(absences);
+
+  document.getElementById("resultCount").textContent =
+    `${filtered.length} registros · ${employees} colaboradores`;
+}
+
+function renderCharts(filtered) {
+  const counts = {};
+  const balances = {};
+
+  statusList.forEach(status => {
+    counts[status] = 0;
+    balances[status] = 0;
+  });
+
+  filtered.forEach(item => {
+    counts[item.situacao] =
+      (counts[item.situacao] || 0) + 1;
+
+    balances[item.situacao] =
+      (balances[item.situacao] || 0) + toNumber(item.saldo);
+  });
+
+  const maxCount = Math.max(1, ...Object.values(counts));
+  const maxBalance = Math.max(1, ...Object.values(balances));
+
+  document.getElementById("statusChart").innerHTML =
+    statusList.map(status => `
+      <div class="bar-row">
+        <div class="bar-header">
+          <span>${status}</span>
+          <span>${counts[status]} registro(s)</span>
+        </div>
+        <div class="bar-background">
+          <div
+            class="bar"
+            style="
+              width: ${(counts[status] / maxCount) * 100}%;
+              --bar-start: ${statusColors[status][0]};
+              --bar-end: ${statusColors[status][1]};
+            "
+          ></div>
+        </div>
+      </div>
+    `).join("");
+
+  document.getElementById("balanceChart").innerHTML =
+    statusList.map(status => `
+      <div class="bar-row">
+        <div class="bar-header">
+          <span>${status}</span>
+          <span>${formatNumber(balances[status])} dias</span>
+        </div>
+        <div class="bar-background">
+          <div
+            class="bar"
+            style="
+              width: ${(balances[status] / maxBalance) * 100}%;
+              --bar-start: ${statusColors[status][0]};
+              --bar-end: ${statusColors[status][1]};
+            "
+          ></div>
+        </div>
+      </div>
+    `).join("");
+
+  renderAlerts(filtered);
+}
+
+function renderAlerts(filtered) {
+  const alerts = [];
+
+  const overdue = filtered.filter(
+    item => item.situacao === "Vencido"
+  );
+
+  const lost = filtered.filter(
+    item => item.situacao === "Perdido"
+  );
+
+  const marked = filtered.filter(
+    item => item.saldo.includes("*")
+  );
+
+  const manyAbsences = filtered.filter(
+    item => toNumber(item.faltas) >= 10
+  );
+
+  if (overdue.length > 0) {
+    alerts.push(`
+      <div class="alert" style="--alert-color: var(--orange)">
+        <div class="alert-title">
+          <span>Períodos vencidos</span>
+          <span>${overdue.length}</span>
+        </div>
+        <div class="alert-description">
+          Existem registros vencidos que exigem avaliação do planejamento de concessão.
+        </div>
+      </div>
+    `);
+  }
+
+  if (lost.length > 0) {
+    alerts.push(`
+      <div class="alert" style="--alert-color: var(--red)">
+        <div class="alert-title">
+          <span>Períodos perdidos</span>
+          <span>${lost.length}</span>
+        </div>
+        <div class="alert-description">
+          O relatório indica perda de período aquisitivo em função de afastamento.
+        </div>
+      </div>
+    `);
+  }
+
+  if (marked.length > 0) {
+    alerts.push(`
+      <div class="alert" style="--alert-color: var(--yellow)">
+        <div class="alert-title">
+          <span>Registros com observação</span>
+          <span>${marked.length}</span>
+        </div>
+        <div class="alert-description">
+          Os saldos marcados com asterisco devem ser analisados junto às observações do relatório original.
+        </div>
+      </div>
+    `);
+  }
+
+  if (manyAbsences.length > 0) {
+    alerts.push(`
+      <div class="alert" style="--alert-color: var(--purple)">
+        <div class="alert-title">
+          <span>Faltas relevantes</span>
+          <span>${manyAbsences.length}</span>
+        </div>
+        <div class="alert-description">
+          Há registros com 10 ou mais faltas informadas.
+        </div>
+      </div>
+    `);
+  }
+
+  if (alerts.length === 0) {
+    alerts.push(`
+      <div class="alert-description">
+        Nenhum alerta encontrado para os filtros atuais.
+      </div>
+    `);
+  }
+
+  document.getElementById("alerts").innerHTML = alerts.join("");
+}
+
+function renderTable(filtered) {
+  const body = document.getElementById("tableBody");
+
+  if (filtered.length === 0) {
+    body.innerHTML = `
+      <tr>
+        <td colspan="10" class="empty">
+          Nenhum registro encontrado para os filtros selecionados.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  body.innerHTML = filtered.map(item => {
+    const saldoWarning = item.saldo.includes("*")
+      ? "warning"
+      : "";
+
+    const faltasWarning = toNumber(item.faltas) >= 10
+      ? "warning"
+      : "";
+
+    return `
+      <tr>
+        <td>
+          <span class="employee-name">${item.nome}</span>
+          <span class="employee-info">
+            Matrícula ${item.matricula} · admissão ${item.admissao}
+          </span>
+        </td>
+
+        <td>${item.aquisitivo}</td>
+        <td>${item.gozo}</td>
+        <td>${item.limite}</td>
+
+        <td>
+          <span class="status ${statusClass(item.situacao)}">
+            ${item.situacao}
+          </span>
+        </td>
+
+        <td>${item.tipo}</td>
+        <td>${item.gozados}</td>
+        <td class="${saldoWarning}">${item.saldo}</td>
+        <td>${item.afastamento}</td>
+        <td class="${faltasWarning}">${item.faltas}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function render() {
+  const filtered = getFilteredData();
+
+  renderKpis(filtered);
+  renderCharts(filtered);
+  renderTable(filtered);
+}
+
+document
+  .getElementById("search")
+  .addEventListener("input", render);
+
+document
+  .getElementById("statusFilter")
+  .addEventListener("change", render);
+
+document
+  .getElementById("employeeFilter")
+  .addEventListener("change", render);
+
+document
+  .getElementById("sortFilter")
+  .addEventListener("change", render);
+
+document
+  .getElementById("clearButton")
+  .addEventListener("click", () => {
+    document.getElementById("search").value = "";
+    document.getElementById("statusFilter").value = "";
+    document.getElementById("employeeFilter").value = "";
+    document.getElementById("sortFilter").value = "employee";
+    render();
+  });
+
+populateEmployees();
+render();
+</script>
+</body>
+</html>
